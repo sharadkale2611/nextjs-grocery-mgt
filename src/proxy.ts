@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 
 export function proxy(request: NextRequest) {
 
-    return NextResponse.next();
+    // return NextResponse.next();
 
     // Read cookies from the request header
     console.log("Middleware: Checking authentication via cookies ...");

@@ -104,7 +104,7 @@ const AppHeader: React.FC = () => {
               width={154}
               height={32}
               className="dark:hidden"
-              src="./images/logo/logo.svg"
+              src="./images/logo/logo-2.svg"
               alt="Logo"
             />
             <Image
@@ -138,7 +138,7 @@ const AppHeader: React.FC = () => {
 
           <div className="hidden lg:block">
             <div className="relative">
-              <h2 className="text-xl dark:text-white">Epic Sugar {formattedRoles}</h2>
+              <h2 className="text-xl dark:text-white">Grocery Management {formattedRoles}</h2>
             </div>
           </div>
         </div>

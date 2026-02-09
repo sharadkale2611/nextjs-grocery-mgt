@@ -18,18 +18,15 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { icon: <Icon name="BoxCubeIcon" />, name: "Dashboard", path: "/" },
-  { icon: <Icon name="BoxCubeIcon" />, name: "Users", path: "/grocery/users"},
-  { icon: <Icon name="BoxCubeIcon" />, name: "Roles", path: "/grocery/roles" },
   { icon: <Icon name="BoxCubeIcon" />, name: "Categories", path: "/grocery/categories" },
   { icon: <Icon name="BoxCubeIcon" />, name: "Products", path: "/grocery/products" },
   { icon: <Icon name="BoxCubeIcon" />, name: "Stock Ledger", path: "/grocery/stock-ledger" },
   { icon: <Icon name="BoxCubeIcon" />, name: "Stock Adjustment", path: "/grocery/stock-adjustment" },
-  { icon: <Icon name="BoxCubeIcon" />, name: "Firms", path: "/grocery/firm" },
 
 
 
-  { icon: <Icon name="BoxCubeIcon" />, name: "Mills", path: "/mills", roles: ["Super-Admin"] },
-  { icon: <Icon name="BoxCubeIcon" />, name: "Company / Buyer", path: "/companies", roles: [ "Super-Admin"] },
+  // { icon: <Icon name="BoxCubeIcon" />, name: "Mills", path: "/mills", roles: ["Super-Admin"] },
+  // { icon: <Icon name="BoxCubeIcon" />, name: "Company / Buyer", path: "/companies", roles: [ "Super-Admin"] },
 
   // Mill-admin
   { icon: <Icon name="BoxCubeIcon" />, name: "Products", path: "/products", roles: ["Mill-Admin"] },
@@ -47,8 +44,13 @@ const othersItems: NavItem[] = [
   // { icon: <Icon name="BoxCubeIcon" />, name: "Roles", path: "/", roles: ["Super-Admin"] },
   // { icon: <Icon name="BoxCubeIcon" />, name: "Role Permissions", path: "/", roles: ["Super-Admin"] },
   // { icon: <Icon name="BoxCubeIcon" />, name: "Document Types", path: "/", roles: ["Super-Admin"] },  
-  { icon: <Icon name="BoxCubeIcon" />, name: "States", path: "/settings/states", roles: ["Super-Admin"] },
-  { icon: <Icon name="BoxCubeIcon" />, name: "Cities", path: "/settings/cities", roles: ["Super-Admin"] },  
+  // { icon: <Icon name="BoxCubeIcon" />, name: "States", path: "/settings/states", roles: ["Super-Admin"] },
+  // { icon: <Icon name="BoxCubeIcon" />, name: "Cities", path: "/settings/cities", roles: ["Super-Admin"] },  
+
+  { icon: <Icon name="BoxCubeIcon" />, name: "Users", path: "/grocery/users"},
+  { icon: <Icon name="BoxCubeIcon" />, name: "Roles", path: "/grocery/roles" },
+  { icon: <Icon name="BoxCubeIcon" />, name: "Firms", path: "/grocery/firm" },
+
 ];
 
 
@@ -113,7 +115,7 @@ const AppSidebar: React.FC = () => {
     >
       <div className="py-8 px-5">
         <Link href="/">
-          <Image src="/images/logo/logo.svg" alt="Logo" width={150} height={40} />
+          <Image src="/images/logo/logo-2.svg" alt="Logo" width={150} height={40} />
         </Link>
       </div>
 

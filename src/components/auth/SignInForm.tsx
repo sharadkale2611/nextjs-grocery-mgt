@@ -47,7 +47,7 @@ export default function SignInForm() {
           <CustomInput
             label="Username"
             name="username"
-            value={username}
+            value={username} 
             onChange={(e) => setUsername(e.target.value)}
           />
 

@@ -6,6 +6,8 @@ export const API_ROUTES = {
     LOGOUT: "/auth/logout",
   },
 
+  FIRMS: "/firms",
+
   // Add Authebntication routes here in the future
   MILLS: "/mills",
   MILL_DETAILS: (id: number) => `/mills/mill-details/${id}`,

@@ -49,7 +49,7 @@ const othersItems: NavItem[] = [
 
   { icon: <Icon name="BoxCubeIcon" />, name: "Users", path: "/grocery/users"},
   { icon: <Icon name="BoxCubeIcon" />, name: "Roles", path: "/grocery/roles" },
-  { icon: <Icon name="BoxCubeIcon" />, name: "Firms", path: "/grocery/firm" },
+  { icon: <Icon name="BoxCubeIcon" />, name: "Firms", path: "/grocery/firms" },
 
 ];
 

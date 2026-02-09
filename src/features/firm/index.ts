@@ -7,8 +7,7 @@ export {
 // Types
 export type {
   Firm,
-  FirmDetails,
-  FirmWithDetails,
+  ApiResponse,
 } from "./firm.types";
 
 // Validation

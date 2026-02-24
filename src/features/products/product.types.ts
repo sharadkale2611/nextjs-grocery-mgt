@@ -25,6 +25,8 @@ export interface Product {
 
   createdAt: string;
   updatedAt?: string;
+    primaryImageUrl?: string | null;
+
 }
 
 

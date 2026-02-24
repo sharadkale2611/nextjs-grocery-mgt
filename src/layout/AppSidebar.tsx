@@ -29,13 +29,13 @@ const navItems: NavItem[] = [
   // { icon: <Icon name="BoxCubeIcon" />, name: "Company / Buyer", path: "/companies", roles: [ "Super-Admin"] },
 
   // Mill-admin
-  { icon: <Icon name="BoxCubeIcon" />, name: "Products", path: "/products", roles: ["Mill-Admin"] },
+  // { icon: <Icon name="BoxCubeIcon" />, name: "Products", path: "/products", roles: ["Mill-Admin"] },
 
   // Company-admin
-  { icon: <Icon name="BoxCubeIcon" />, name: "Products Shop", path: "/products/shop", roles: ["Company-Admin"] },
+  // { icon: <Icon name="BoxCubeIcon" />, name: "Products Shop", path: "/products/shop", roles: ["Company-Admin"] },
 
-  { icon: <Icon name="BoxCubeIcon" />, name: "KYC Documents", path: "/kyc-documents/uploads", roles: ["Mill-Admin", "Company-Admin"] },
-  { icon: <Icon name="BoxCubeIcon" />, name: "My Order", path: "/order/invoice", roles: ["Mill-Admin", "Company-Admin"] },
+  // { icon: <Icon name="BoxCubeIcon" />, name: "KYC Documents", path: "/kyc-documents/uploads", roles: ["Mill-Admin", "Company-Admin"] },
+  // { icon: <Icon name="BoxCubeIcon" />, name: "My Order", path: "/order/invoice", roles: ["Mill-Admin", "Company-Admin"] },
   
 
 ];
@@ -47,8 +47,8 @@ const othersItems: NavItem[] = [
   // { icon: <Icon name="BoxCubeIcon" />, name: "States", path: "/settings/states", roles: ["Super-Admin"] },
   // { icon: <Icon name="BoxCubeIcon" />, name: "Cities", path: "/settings/cities", roles: ["Super-Admin"] },  
 
-  { icon: <Icon name="BoxCubeIcon" />, name: "Users", path: "/grocery/users"},
-  { icon: <Icon name="BoxCubeIcon" />, name: "Roles", path: "/grocery/roles" },
+  // { icon: <Icon name="BoxCubeIcon" />, name: "Users", path: "/grocery/users"},
+  // { icon: <Icon name="BoxCubeIcon" />, name: "Roles", path: "/grocery/roles" },
   { icon: <Icon name="BoxCubeIcon" />, name: "Firms", path: "/grocery/firms" },
 
 ];

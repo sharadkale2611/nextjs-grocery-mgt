@@ -3,187 +3,541 @@
 import Button from "@/components/atoms/Button";
 import CustomInput from "@/components/atoms/CustomInput";
 import CategorySelector from "@/components/molecules/CategorySelector";
+
 import React, { useState } from "react";
 
+import { useRouter } from "next/navigation";
+
+import { enqueueSnackbar } from "notistack";
+
+import { productApi } from "@/features/products";
+
+import { ProductCreateSchema } from "@/features/products/product.validation";
+
+
+
 export default function CreateProductPage() {
-  // Static UI state only
-  const [form] = useState({
+
+
+  const router = useRouter();
+
+
+  const [createProduct, { isLoading }] =
+    productApi.useCreateProductMutation();
+
+
+
+  const [form, setForm] = useState({
+
     productName: "",
-    category: "",
+
+    categoryId: 0,
+
     barcode: "",
+
     unit: "Pcs",
-    isLoose: true,
+
+    isLooseItem: true,
+
     mrp: "",
+
     salePrice: "",
-    gst: "5",
+
+    gstPercent: "5",
+
     lowStockAlert: "",
+
     isActive: true,
+
   });
 
+
+
+
+  // =========================
+  // HANDLE INPUT CHANGE
+  // =========================
+
+  const handleChange =
+
+    (name: string, value: any) => {
+
+      setForm(prev => ({
+
+        ...prev,
+
+        [name]: value,
+
+      }));
+
+    };
+
+
+
+
+
+  // =========================
+  // SAVE PRODUCT
+  // =========================
+
+  const handleSubmit = async () => {
+
+
+    try {
+
+
+      // ZOD VALIDATION
+
+
+      const validated =
+        ProductCreateSchema.parse({
+
+          categoryId: form.categoryId,
+
+          productName: form.productName,
+
+          barcode: form.barcode,
+
+          unit: form.unit,
+
+          isLooseItem: form.isLooseItem,
+
+          mrp: Number(form.mrp),
+
+          salePrice: Number(form.salePrice),
+
+          gstPercent: Number(form.gstPercent),
+
+          lowStockAlert:
+
+            form.lowStockAlert
+              ? Number(form.lowStockAlert)
+              : undefined,
+
+          isActive: form.isActive,
+
+        });
+
+
+
+
+      await createProduct(validated).unwrap();
+
+
+
+
+      enqueueSnackbar(
+
+        "Product created successfully",
+
+        { variant: "success" }
+
+      );
+
+
+
+      router.push("/grocery/products");
+
+
+
+    }
+
+
+    catch (err: any) {
+
+
+      enqueueSnackbar(
+
+        err?.data?.message ||
+
+        err?.message ||
+
+        "Failed to create product",
+
+        { variant: "error" }
+
+      );
+
+    }
+
+
+  };
+
+
+
+
   return (
+
     <div className="mx-auto max-w-4xl px-6 py-8">
-      {/* Header */}
+
+
+
       <div className="mb-6 flex items-center gap-2">
-        <span className="text-xl text-primary">+</span>
-        <h1 className="text-2xl font-semibold text-gray-900">
+
+        <h1 className="text-2xl font-semibold">
+
           Add Product
+
         </h1>
+
       </div>
 
-      {/* Card */}
+
+
+
       <div className="rounded-xl border bg-white shadow-sm">
+
         <div className="space-y-8 p-6">
 
+
+
           {/* Product Name */}
+
+
           <CustomInput
+
             label="Product Name *"
+
             name="productName"
-            placeholder="Enter product name"
+
             value={form.productName}
+
+            onChange={(e: any) =>
+
+              handleChange(
+
+                "productName",
+
+                e.target.value
+
+              )
+
+            }
+
           />
 
-          {/* Category Selector */}
-          <section>
-           <CategorySelector />
-          </section>
 
-          {/* Barcode / SKU */}     
-          <section>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Barcode / SKU *
-            </label>
 
-            <div className="flex gap-3">
-              <input
-                type="text"
-                className="flex-1 rounded-lg border px-3 py-2 text-sm"
-                placeholder="Enter barcode"
-                readOnly
-              />
 
-              <Button variant="default">
-                Scan
-              </Button>
-            </div>
-          </section>
+          {/* Category */}
+
+
+          <CategorySelector
+
+            value={form.categoryId}
+
+            onChange={(id: number) =>
+
+              handleChange("categoryId", id)
+
+            }
+
+          />
+
+
+
+
+
+          {/* Barcode */}
+
+
+          <CustomInput
+
+            label="Barcode"
+
+            name="barcode"
+
+            value={form.barcode}
+
+            onChange={(e: any) =>
+
+              handleChange(
+
+                "barcode",
+
+                e.target.value
+
+              )
+
+            }
+
+          />
+
+
+
+
 
           {/* Unit */}
-          <section>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Unit *
-            </label>
 
-            <div className="flex gap-6 text-sm text-gray-700">
-              {["Kg", "Ltr", "Pcs"].map((unit) => (
-                <label key={unit} className="flex items-center gap-2">
+
+          <div>
+
+            <label>Unit</label>
+
+            <div className="flex gap-4">
+
+
+              {["Kg", "Ltr", "Pcs"].map(unit => (
+
+                <label key={unit}>
+
                   <input
+
                     type="radio"
+
                     checked={form.unit === unit}
-                    readOnly
-                    className="accent-primary"
+
+                    onChange={() =>
+
+                      handleChange(
+
+                        "unit",
+
+                        unit
+
+                      )
+
+                    }
+
                   />
+
                   {unit}
+
                 </label>
+
               ))}
+
+
             </div>
-          </section>
 
-          {/* Loose Item */}
-          <section>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Is Loose Item *
-            </label>
-
-            <div className="flex gap-6 text-sm text-gray-700">
-              {["Yes", "No"].map((val) => (
-                <label key={val} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    checked={val === "Yes"}
-                    readOnly
-                    className="accent-primary"
-                  />
-                  {val}
-                </label>
-              ))}
-            </div>
-          </section>
-
-          {/* MRP & Sale Price */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <CustomInput
-              label="MRP *"
-              name="mrp"
-              placeholder="0.00"
-              value={form.mrp}
-            />
-
-            <CustomInput
-              label="Sale Price *"
-              name="salePrice"
-              placeholder="0.00"
-              value={form.salePrice}
-            />
           </div>
 
-          {/* GST */}
-          <section>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              GST % *
-            </label>
 
-            <div className="flex gap-6 text-sm text-gray-700">
-              {["0", "5", "12", "18"].map((gst) => (
-                <label key={gst} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    checked={form.gst === gst}
-                    readOnly
-                    className="accent-primary"
-                  />
-                  {gst}%
-                </label>
-              ))}
-            </div>
-          </section>
 
-          {/* Low Stock Alert */}
+
+
+          {/* Loose */}
+
+
+          <div>
+
+            <label>Loose Item</label>
+
+            <input
+
+              type="checkbox"
+
+              checked={form.isLooseItem}
+
+              onChange={(e) =>
+
+                handleChange(
+
+                  "isLooseItem",
+
+                  e.target.checked
+
+                )
+
+              }
+
+            />
+
+          </div>
+
+
+
+
+          {/* MRP */}
+
+
           <CustomInput
-            label="Low Stock Alert *"
-            name="lowStockAlert"
-            placeholder="Enter quantity"
-            value={form.lowStockAlert}
+
+            label="MRP"
+
+            name="mrp"
+
+            value={form.mrp}
+
+            onChange={(e: any) =>
+
+              handleChange(
+
+                "mrp",
+
+                e.target.value
+
+              )
+
+            }
+
           />
 
+
+
+
+          {/* SalePrice */}
+
+
+          <CustomInput
+
+            label="Sale Price"
+
+            name="salePrice"
+
+            value={form.salePrice}
+
+            onChange={(e: any) =>
+
+              handleChange(
+
+                "salePrice",
+
+                e.target.value
+
+              )
+
+            }
+
+          />
+
+
+
+
+          {/* GST */}
+
+
+          <CustomInput
+
+            label="GST"
+
+            name="gstPercent"
+
+            value={form.gstPercent}
+
+            onChange={(e: any) =>
+
+              handleChange(
+
+                "gstPercent",
+
+                e.target.value
+
+              )
+
+            }
+
+          />
+
+
+
+
+
+          {/* LowStock */}
+
+
+          <CustomInput
+
+            label="Low Stock Alert"
+
+            name="lowStockAlert"
+
+            value={form.lowStockAlert}
+
+            onChange={(e: any) =>
+
+              handleChange(
+
+                "lowStockAlert",
+
+                e.target.value
+
+              )
+
+            }
+
+          />
+
+
+
+
           {/* Status */}
-          <section>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Status
-            </label>
 
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={form.isActive}
-                readOnly
-                className="accent-primary"
-              />
-              Active
-            </label>
-          </section>
 
-          {/* Actions */}
-          <div className="flex gap-4 border-t pt-6">
-            <Button variant="primary">
+          <label>
+
+            <input
+
+              type="checkbox"
+
+              checked={form.isActive}
+
+              onChange={(e) =>
+
+                handleChange(
+
+                  "isActive",
+
+                  e.target.checked
+
+                )
+
+              }
+
+            />
+
+            Active
+
+          </label>
+
+
+
+
+          {/* Buttons */}
+
+
+          <div className="flex gap-4 pt-6 border-t">
+
+
+            <Button
+
+              variant="primary"
+
+              onClick={handleSubmit}
+
+              isLoading={isLoading}
+
+            >
+
               Save Product
+
             </Button>
 
-            <Button variant="default" onClick={() => history.back()}>
+
+
+            <Button
+
+              variant="default"
+
+              onClick={() => router.back()}
+
+            >
+
               Cancel
+
             </Button>
+
+
           </div>
+
+
+
         </div>
+
       </div>
+
     </div>
+
   );
+
 }

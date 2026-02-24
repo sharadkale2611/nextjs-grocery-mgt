@@ -2,179 +2,435 @@
 
 import Button from "@/components/atoms/Button";
 import CustomInput from "@/components/atoms/CustomInput";
-import React, { useState } from "react";
-import { useParams } from "next/navigation";
 import CategorySelector from "@/components/molecules/CategorySelector";
 
+import React, { useEffect, useState } from "react";
+
+import { useParams, useRouter } from "next/navigation";
+
+import { enqueueSnackbar } from "notistack";
+
+import { productApi } from "@/features/products";
+
+import { ProductCreateSchema } from "@/features/products/product.validation";
+
+
+
 export default function EditProductPage() {
+
   const params = useParams();
 
-  // Static prefilled data (Edit mode)
-  const [form] = useState({
-    productName: "Tata Rice 25kg",
-    category: "Rice & Grains",
-    barcode: "8901234567890",
-    unit: "Kg",
-    isLoose: true,
-    mrp: "60.00",
-    salePrice: "58.00",
-    gst: "5",
-    lowStockAlert: "20",
+  const router = useRouter();
+
+  const productId = Number(params.id);
+
+
+
+  // API hooks
+
+  const { data, isLoading } =
+    productApi.useGetProductByIdQuery(productId);
+
+
+
+
+  const [updateProduct, { isLoading: isUpdating }] =
+    productApi.useUpdateProductMutation();
+
+
+
+
+  const [form, setForm] = useState({
+
+    productName: "",
+
+    categoryId: 0,
+
+    barcode: "",
+
+    unit: "Pcs",
+
+    isLooseItem: false,
+
+    mrp: "",
+
+    salePrice: "",
+
+    gstPercent: "0",
+
+    lowStockAlert: "",
+
     isActive: true,
+
   });
 
+
+
+  // =========================
+  // Prefill form
+  // =========================
+
+  useEffect(() => {
+
+    if (data) {
+
+      setForm({
+
+        productName: data.productName,
+
+        categoryId: data.categoryId,
+
+        barcode: data.barcode || "",
+
+        unit: data.unit,
+
+        isLooseItem: data.isLooseItem,
+
+        mrp: String(data.mrp),
+
+        salePrice: String(data.salePrice),
+
+        gstPercent: String(data.gstPercent),
+
+        lowStockAlert:
+          data.lowStockAlert
+            ? String(data.lowStockAlert)
+            : "",
+
+        isActive: data.isActive,
+
+      });
+
+    }
+
+  }, [data]);
+
+
+
+
+  const handleChange =
+    (name: string, value: any) => {
+
+      setForm(prev => ({
+        ...prev,
+        [name]: value,
+      }));
+
+    };
+
+
+
+
+  // =========================
+  // UPDATE
+  // =========================
+
+  const handleSubmit = async () => {
+
+
+    try {
+
+      const validated =
+        ProductCreateSchema.parse({
+
+          categoryId: form.categoryId,
+
+          productName: form.productName,
+
+          barcode: form.barcode,
+
+          unit: form.unit,
+
+          isLooseItem: form.isLooseItem,
+
+          mrp: Number(form.mrp),
+
+          salePrice: Number(form.salePrice),
+
+          gstPercent: Number(form.gstPercent),
+
+          lowStockAlert:
+            form.lowStockAlert
+              ? Number(form.lowStockAlert)
+              : undefined,
+
+          isActive: form.isActive,
+
+        });
+
+
+
+
+      await updateProduct({
+
+        productId,
+
+        body: {
+
+          productId,
+
+          ...validated,
+
+        },
+
+      }).unwrap();
+
+
+
+
+      enqueueSnackbar(
+        "Product updated successfully",
+        { variant: "success" }
+      );
+
+
+
+      router.push("/grocery/products");
+
+    }
+
+
+    catch (err: any) {
+
+      enqueueSnackbar(
+        err?.data?.message ||
+        err?.message ||
+        "Update failed",
+        { variant: "error" }
+      );
+
+    }
+
+  };
+
+
+
+
+  if (isLoading)
+    return <div>Loading...</div>;
+
+
+
+
   return (
+
     <div className="mx-auto max-w-4xl px-6 py-8">
-      {/* Header */}
-      <div className="mb-6 flex items-center gap-2">
-        <span className="text-lg">✏️</span>
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Edit Product
-        </h1>
-      </div>
 
-      {/* Card */}
+      <h1 className="text-2xl font-semibold mb-6">
+
+        Edit Product
+
+      </h1>
+
+
+
+
       <div className="rounded-xl border bg-white shadow-sm">
-        <div className="space-y-8 p-6">
 
-          {/* Product Name */}
+        <div className="space-y-6 p-6">
+
+
+
+
           <CustomInput
+
             label="Product Name"
+
             name="productName"
+
             value={form.productName}
-            readOnly
+
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(
+                "productName",
+                e.target.value
+              )
+            }
+
           />
 
-          {/* Category (Nested) */}
-          <section>
-            <CategorySelector />
-          </section>
 
-          {/* Barcode / SKU */}
+
+
+          <CategorySelector
+
+            value={form.categoryId}
+
+            onChange={(id) =>
+              handleChange("categoryId", id)
+            }
+
+          />
+
+
+
+
           <CustomInput
-            label="Barcode / SKU (Read-only)"
+
+            label="Barcode"
+
             name="barcode"
+
             value={form.barcode}
-            readOnly
+
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(
+                "barcode",
+                e.target.value
+              )
+            }
+
           />
 
-          {/* Unit */}
-          <section>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Unit
-            </label>
 
-            <div className="flex gap-6 text-sm text-gray-700">
-              {["Kg", "Ltr", "Pcs"].map((unit) => (
-                <label key={unit} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    checked={form.unit === unit}
-                    readOnly
-                    className="accent-primary"
-                  />
-                  {unit}
-                </label>
-              ))}
-            </div>
-          </section>
 
-          {/* Is Loose Item */}
-          <section>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Is Loose Item
-            </label>
 
-            <div className="flex gap-6 text-sm text-gray-700">
-              {["Yes", "No"].map((val) => (
-                <label key={val} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    checked={val === "Yes" && form.isLoose}
-                    readOnly
-                    className="accent-primary"
-                  />
-                  {val}
-                </label>
-              ))}
-            </div>
-          </section>
-
-          {/* MRP & Sale Price */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <CustomInput
-              label="MRP"
-              name="mrp"
-              value={form.mrp}
-              readOnly
-            />
-
-            <CustomInput
-              label="Sale Price"
-              name="salePrice"
-              value={form.salePrice}
-              readOnly
-            />
-          </div>
-
-          {/* GST */}
-          <section>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              GST %
-            </label>
-
-            <div className="flex gap-6 text-sm text-gray-700">
-              {["0", "5", "12", "18"].map((gst) => (
-                <label key={gst} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    checked={form.gst === gst}
-                    readOnly
-                    className="accent-primary"
-                  />
-                  {gst}%
-                </label>
-              ))}
-            </div>
-          </section>
-
-          {/* Low Stock Alert */}
           <CustomInput
-            label="Low Stock Alert"
-            name="lowStockAlert"
-            value={form.lowStockAlert}
-            readOnly
+
+            label="MRP"
+
+            name="mrp"
+
+            value={form.mrp}
+
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(
+                "mrp",
+                e.target.value
+              )
+            }
+
           />
 
-          {/* Status */}
-          <section>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Status
-            </label>
 
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={form.isActive}
-                readOnly
-                className="accent-primary"
-              />
-              Active
-            </label>
-          </section>
 
-          {/* Actions */}
-          <div className="flex gap-4 border-t pt-6">
-            <Button variant="primary">
+
+          <CustomInput
+
+            label="Sale Price"
+
+            name="salePrice"
+
+            value={form.salePrice}
+
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(
+                "salePrice",
+                e.target.value
+              )
+            }
+
+          />
+
+
+
+
+          <CustomInput
+
+            label="GST"
+
+            name="gstPercent"
+
+            value={form.gstPercent}
+
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(
+                "gstPercent",
+                e.target.value
+              )
+            }
+
+          />
+
+
+
+
+          <CustomInput
+
+            label="Low Stock Alert"
+
+            name="lowStockAlert"
+
+            value={form.lowStockAlert}
+
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(
+                "lowStockAlert",
+                e.target.value
+              )
+            }
+
+          />
+
+
+
+
+          <label>
+
+            <input
+
+              type="checkbox"
+
+              checked={form.isActive}
+
+              onChange={(e) =>
+                handleChange(
+                  "isActive",
+                  e.target.checked
+                )
+              }
+
+            />
+
+            Active
+
+          </label>
+
+
+
+
+          <div className="flex gap-4 pt-6 border-t">
+
+
+            <Button
+
+              variant="primary"
+
+              isLoading={isUpdating}
+
+              onClick={handleSubmit}
+
+            >
+
               Update
+
             </Button>
 
-            <Button variant="default" onClick={() => history.back()}>
+
+
+            <Button
+
+              variant="default"
+
+              onClick={() => router.back()}
+
+            >
+
               Cancel
+
             </Button>
+
+
           </div>
+
+
+
         </div>
+
       </div>
+
     </div>
+
   );
+
 }

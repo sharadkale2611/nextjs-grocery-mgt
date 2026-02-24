@@ -8,13 +8,15 @@ export const api = createApi({
     baseQuery: baseQueryWithReauth,
     tagTypes: ["Mill",
         "Company",
-        "Product",
+        "Products",
         "ProductImage",
         "SellingPrice",
         "State",
         "City",
         "KYC",
-        "Firms"
+        "Firms",
+        "Categories",
+        "ProductImages",
     ],
     endpoints: () => ({}),
 });

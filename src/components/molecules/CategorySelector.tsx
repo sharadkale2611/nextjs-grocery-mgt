@@ -2,31 +2,114 @@
 
 import React from "react";
 
-export default function CategorySelector() {
+import {
+  useGetCategoriesQuery,
+} from "@/features/categories";
+
+
+
+type Props = {
+
+  value: number;
+
+  onChange: (categoryId: number) => void;
+
+};
+
+
+
+export default function CategorySelector({
+
+  value,
+
+  onChange,
+
+}: Props) {
+
+  const {
+
+    data: categories,
+
+    isLoading,
+
+    isError,
+
+  } = useGetCategoriesQuery();
+
+
+
   return (
+
     <div>
+
       <label className="mb-2 block text-sm font-medium text-gray-700">
+
         Category *
+
       </label>
 
+
+
       <select
+
+        value={value}
+
+        onChange={(e) =>
+
+          onChange(Number(e.target.value))
+
+        }
+
         className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-        disabled
+
+        disabled={isLoading || isError}
+
       >
-        {/* Parent */}
-        <option>Grocery</option>
 
-        {/* Children */}
-        <option className="pl-4">↳ Rice & Grains</option>
-        <option className="pl-4">↳ Snacks</option>
-        <option className="pl-4">↳ Dairy</option>
-        <option className="pl-4">↳ Beverages</option>
+        <option value="">
 
-        {/* Another Parent (example) */}
-        <option>Electronics</option>
-        <option className="pl-4">↳ Mobile Accessories</option>
-        <option className="pl-4">↳ Home Appliances</option>
+          {isLoading
+
+            ? "Loading..."
+
+            : "Select Category"}
+
+        </option>
+
+
+
+        {categories?.map(category => (
+
+          <option
+
+            key={category.categoryId}
+
+            value={category.categoryId}
+
+          >
+
+            {category.categoryName}
+
+          </option>
+
+        ))}
+
       </select>
+
+
+
+      {isError && (
+
+        <p className="text-red-500 text-sm mt-1">
+
+          Failed to load categories
+
+        </p>
+
+      )}
+
     </div>
+
   );
+
 }

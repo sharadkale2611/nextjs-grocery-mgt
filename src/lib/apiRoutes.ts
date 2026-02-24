@@ -7,6 +7,7 @@ export const API_ROUTES = {
   },
 
   FIRMS: "/firms",
+  CATEGORIES: "/categories",
 
   // Add Authebntication routes here in the future
   MILLS: "/mills",
@@ -20,7 +21,7 @@ export const API_ROUTES = {
     KYC: "/kyc-documents/verification",
     KYC_UPDATE: "/kyc-documents/status",
     KYC_UPLOADS: (id: number) => `/kyc-documents/${id}`,
-    PRODUCT_IMAGES: "/product-images",
+    PRODUCT_IMAGES: "/ProductImages",
     SELLING_PRICES: "/selling-prices",
     ORDERS: "/orders",
     // PRODUCT_DETAILS: (id: number) => `/products/${id}/details`,

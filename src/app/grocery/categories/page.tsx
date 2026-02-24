@@ -1,88 +1,148 @@
 "use client";
 
 import { useState } from "react";
-import ComponentCard from "@/components/common/ComponentCard";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import Pagination from "@/components/tables/Pagination";
+
+import ComponentCard
+  from "@/components/common/ComponentCard";
+
+import PageBreadcrumb
+  from "@/components/common/PageBreadCrumb";
+
+import Pagination
+  from "@/components/tables/Pagination";
+
 import Link from "next/link";
-import Button from "@/components/atoms/Button";
-import CategoriesTable from "./table";
+
+import Button
+  from "@/components/atoms/Button";
+
+import CategoriesTable
+  from "./table";
+
+
+import {
+
+  useGetCategoriesQuery,
+
+} from "@/features/categories";
+
 
 export default function CategoriesPage() {
-  const [currentPage, setCurrentPage] = useState(1);
 
-  // Static categories data
-  const categories = [
-    {
-      id: 1,
-      categoryName: "Grocery",
-      parentCategory: "-",
-      status: "Active",
-    },
-    {
-      id: 2,
-      categoryName: "Rice & Grains",
-      parentCategory: "Grocery",
-      status: "Active",
-    },
-    {
-      id: 3,
-      categoryName: "Snacks",
-      parentCategory: "Grocery",
-      status: "Active",
-    },
-    {
-      id: 4,
-      categoryName: "Dairy",
-      parentCategory: "Grocery",
-      status: "Active",
-    },
-    {
-      id: 5,
-      categoryName: "Beverages",
-      parentCategory: "Grocery",
-      status: "Active",
-    },
-  ];
+  const [currentPage, setCurrentPage]
+    = useState(1);
+
+
+  const {
+
+    data,
+
+    isLoading,
+
+    isError,
+
+  }
+    = useGetCategoriesQuery();
+
+
+
+  if (isLoading)
+    return <div>Loading...</div>;
+
+
+  if (isError)
+    return <div>Error loading categories</div>;
+
+
+
+  const categories =
+    (data ?? []).map(cat => ({
+
+      categoryId:
+        cat.categoryId,
+
+      categoryName:
+        cat.categoryName,
+
+
+      parentCategoryName:
+        "-",
+
+
+      isActive:
+        cat.isActive,
+
+    }));
+
+
 
   return (
+
     <>
-      <PageBreadcrumb pageTitle="Categories" />
+
+      <PageBreadcrumb
+        pageTitle="Categories"
+      />
+
 
       <div className="space-y-6">
+
+
         <ComponentCard
+
           title="Categories"
-          desc={`Showing 1–${categories.length} of 18 categories`}
+
+          desc={`Total ${categories.length} categories found`}
+
+
           action={
-            <div className="flex items-center gap-3">
 
-                {/* Static search box */}
-              <input
-                type="text"
-                placeholder="Search Category"
-                className="rounded-lg border px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                readOnly
-              />
+            <Link
+              href="/grocery/categories/create"
+            >
 
-              <Link href="/grocery/categories/create">
-                <Button variant="primary" size="sm">
-                  + Add Category
-                </Button>
-              </Link>
+              <Button
+                variant="primary"
+                size="sm"
+              >
 
-            
-            </div>
+                + Add Category
+
+              </Button>
+
+            </Link>
+
           }
+
         >
-          <CategoriesTable data={categories} />
+
+
+          <CategoriesTable
+            data={categories}
+          />
+
+
 
           <Pagination
+
             currentPage={currentPage}
-            totalPages={2}
+
+            totalPages={
+              Math.ceil(categories.length / 10)
+            }
+
             onPageChange={setCurrentPage}
+
           />
+
+
         </ComponentCard>
+
+
       </div>
+
     </>
+
   );
+
 }

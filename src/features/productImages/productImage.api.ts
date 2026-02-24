@@ -132,9 +132,41 @@ export const productImageApi =
 
         }),
 
+
+
+        
+      setPrimaryImage:
+        builder.mutation<boolean, number>({
+
+          query: (imageId) => ({
+
+            url: `/api/ProductImages/${imageId}/set-primary`,
+
+            method: "PUT"
+
+          }),
+
+          transformResponse:
+            (res: ApiResponse<any>) => res.success,
+
+          invalidatesTags: ["ProductImages"]
+
+        }),
+
+
+
+
+
     }),
 
+
+
+
+
   });
+
+
+
 
 
 
@@ -145,5 +177,7 @@ export const {
   useUploadProductImageMutation,
 
   useDeleteProductImageMutation,
+
+  useSetPrimaryImageMutation
 
 } = productImageApi;

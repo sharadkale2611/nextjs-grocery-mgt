@@ -17,6 +17,9 @@ export const api = createApi({
         "Firms",
         "Categories",
         "ProductImages",
+        "StockLedger",
+        "StockAdjustments",
+        "ProductBatches"
     ],
     endpoints: () => ({}),
 });

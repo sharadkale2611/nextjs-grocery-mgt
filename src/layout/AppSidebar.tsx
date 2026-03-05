@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
   { icon: <Icon name="BoxCubeIcon" />, name: "Products", path: "/grocery/products" },
   { icon: <Icon name="BoxCubeIcon" />, name: "Stock Ledger", path: "/grocery/stock-ledger" },
   { icon: <Icon name="BoxCubeIcon" />, name: "Stock Adjustment", path: "/grocery/stock-adjustment" },
-
+  { icon: <Icon name="BoxCubeIcon" />, name: "POS Billing", path: "/grocery/pos" },
 
 
   // { icon: <Icon name="BoxCubeIcon" />, name: "Mills", path: "/mills", roles: ["Super-Admin"] },

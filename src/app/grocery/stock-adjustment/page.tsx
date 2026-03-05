@@ -9,16 +9,16 @@ import ComponentCard from "@/components/common/ComponentCard";
 import { useGetProductsQuery } from "@/features/products";
 import { useGetProductBatchesQuery } from "@/features/productbatches";
 import { useCreateStockAdjustmentMutation } from "@/features/stockadjustments";
-
+import { enqueueSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
 export default function StockAdjustmentPage() {
+
+  const router = useRouter();
 
   // ===============================
   // STATE
   // ===============================
   const [productId, setProductId] =
-    useState<number | undefined>();
-
-  const [batchId, setBatchId] =
     useState<number | undefined>();
 
   const [adjustmentType, setAdjustmentType] =
@@ -36,23 +36,20 @@ export default function StockAdjustmentPage() {
   const { data: products = [] } =
     useGetProductsQuery();
 
-  const { data: batches = [] } =
-    useGetProductBatchesQuery(productId!, {
-      skip: !productId,
-    });
-
   const [
     createAdjustment,
     { isLoading }
   ] = useCreateStockAdjustmentMutation();
+
+
 
   // ===============================
   // SUBMIT HANDLER
   // ===============================
   const handleSubmit = async () => {
 
-    if (!productId || !batchId) {
-      alert("Please select Product & Batch");
+    if (!productId) {
+      enqueueSnackbar("Please select Product", { variant: "warning" });
       return;
     }
 
@@ -60,22 +57,32 @@ export default function StockAdjustmentPage() {
 
       await createAdjustment({
         productId,
-        batchId,
         adjustmentType,
         quantity,
         reason,
       }).unwrap();
 
-      alert("Stock adjusted successfully");
+      enqueueSnackbar("Stock adjusted successfully", {
+        variant: "success",
+      });
+      
+      setTimeout(() => {
+        router.push("/grocery/stock-ledger");
+      }, 800);
 
-      // reset form
-      setBatchId(undefined);
-      setQuantity(1);
-      setReason("");
+      // // reset form
+      // setQuantity(1);
+      // setReason("");
 
-    } catch (err) {
+    } catch (err: any) {
+
       console.error(err);
-      alert("Failed to adjust stock");
+
+      enqueueSnackbar(
+        err?.data?.message || "Failed to adjust stock",
+        { variant: "error" }
+      );
+
     }
   };
 
@@ -100,7 +107,6 @@ export default function StockAdjustmentPage() {
                 onChange={(e) => {
                   const value = Number(e.target.value);
                   setProductId(value);
-                  setBatchId(undefined);
                 }}
               >
                 <option value="">Select Product</option>
@@ -111,32 +117,6 @@ export default function StockAdjustmentPage() {
                     value={p.productId}
                   >
                     {p.productName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* ================= BATCH DROPDOWN ⭐ ================= */}
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Batch
-              </label>
-
-              <select
-                className="w-full rounded-lg border px-3 py-2 text-sm"
-                value={batchId ?? ""}
-                onChange={(e) =>
-                  setBatchId(Number(e.target.value))
-                }
-              >
-                <option value="">Select Batch</option>
-
-                {batches.map((b) => (
-                  <option
-                    key={b.batchId}
-                    value={b.batchId}
-                  >
-                    {b.batchNumber} (Stock: {b.remainingQty})
                   </option>
                 ))}
               </select>

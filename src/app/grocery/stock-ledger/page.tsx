@@ -48,11 +48,11 @@ export default function StockLedgerPage() {
     return true;
   });
 
-  const currentStock = ledgerData.reduce(
-    (acc, x) =>
-      acc + (x.isIncrease ? x.quantity : -x.quantity),
-    0
-  );
+  // const currentStock = ledgerData.reduce(
+  //   (acc, x) =>
+  //     acc + (x.isIncrease ? x.quantity : -x.quantity),
+  //   0
+  // );
 
   return (
     <>
@@ -145,15 +145,15 @@ export default function StockLedgerPage() {
                 )}
 
                 {ledgerData.map((row)=>(
-                  <tr key={row.transactionId} className="border-t even:bg-gray-50/50">
+                  <tr key={row.productStockId} className="border-t even:bg-gray-50/50">
                     <td className="px-6 py-4">
                       {new Date(row.createdAt).toLocaleString()}
                     </td>
                     <td className="px-6 py-4">{row.productName}</td>
-                    <td className={`px-6 py-4 font-medium ${row.isIncrease ? "text-green-600":"text-red-600"}`}>
-                      {row.isIncrease ? "+" : "-"}{row.quantity}
+                    <td className={`px-6 py-4 font-medium ${row.quantity > 0 ? "text-green-600" : "text-red-600"}`}>
+                      {row.quantity}
                     </td>
-                    <td className="px-6 py-4">{row.transactionType}</td>
+                    <td className="px-6 py-4">{row.remark}</td>
                   </tr>
                 ))}
               </tbody>
@@ -161,10 +161,10 @@ export default function StockLedgerPage() {
           </div>
 
           {/* FOOTER */}
-          <div className="mt-4 rounded-lg bg-gray-50 px-6 py-4 text-sm text-gray-700">
+          {/* <div className="mt-4 rounded-lg bg-gray-50 px-6 py-4 text-sm text-gray-700">
             <span className="font-medium">Current Stock:</span>{" "}
             <span className="text-gray-900">{currentStock} Kg</span>
-          </div>
+          </div> */}
 
         </ComponentCard>
       </div>

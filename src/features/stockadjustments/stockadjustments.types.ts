@@ -7,9 +7,6 @@ export interface StockAdjustment {
   productId: number;
   productName?: string | null;
 
-  batchId?: number | null;
-  batchNumber?: string | null;
-
   adjustmentType?: string | null;
 
   quantity: number;
@@ -21,7 +18,6 @@ export interface StockAdjustment {
 
 export interface CreateStockAdjustmentDto {
   productId: number;
-  batchId?: number | null;
   adjustmentType?: string | null;
   quantity: number;
   reason?: string | null;

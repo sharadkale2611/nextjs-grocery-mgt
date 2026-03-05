@@ -26,7 +26,7 @@ export const stockLedgerApi = api.injectEndpoints({
     // =============================
     getStockLedger:
       builder.query<StockLedger[], void>({
-        query: () => API_ROUTES.STOCK_TRANSACTIONS,
+        query: () => API_ROUTES.PRODUCT_STOCKS,
 
         transformResponse:
           (res: ApiResponse<StockLedger[]>) =>
@@ -45,7 +45,7 @@ export const stockLedgerApi = api.injectEndpoints({
         { pageNumber?: number; pageSize?: number; productId?: number }
       >({
         query: (params) => ({
-          url: `${API_ROUTES.STOCK_TRANSACTIONS}/paginated`,
+          url: `${API_ROUTES.PRODUCT_STOCKS}/paginated`,
           params,
         }),
 
@@ -64,19 +64,20 @@ export const stockLedgerApi = api.injectEndpoints({
     // =============================
     // GET LEDGER BY ID (DETAIL VIEW ONLY)
     // =============================
-    getStockLedgerById:
-      builder.query<StockLedger, number>({
-        query: (id) =>
-          `${API_ROUTES.STOCK_TRANSACTIONS}/${id}`,
+    // getStockLedgerById:
+    //   builder.query<StockLedger, number>({
+    //     query: (id) =>
+    //       `${API_ROUTES.STOCK_TRANSACTIONS}/${id}`,
 
-        transformResponse:
-          (res: ApiResponse<StockLedger>) =>
-            res.data,
+    //     transformResponse:
+    //       (res: ApiResponse<StockLedger>) =>
+    //         res.data,
 
-        providesTags: (result, error, id) => [
-          { type: "StockLedger", id },
-        ],
-      }),
+    //     providesTags: (result, error, id) => [
+    //       { type: "StockLedger", id },
+    //     ],
+    //   }),
+    
   }),
 });
 
@@ -84,5 +85,5 @@ export const stockLedgerApi = api.injectEndpoints({
 export const {
   useGetStockLedgerQuery,
   useGetStockLedgerPaginatedQuery,
-  useGetStockLedgerByIdQuery,   // ⭐ NEW HOOK
+  // useGetStockLedgerByIdQuery,  
 } = stockLedgerApi;

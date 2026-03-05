@@ -145,18 +145,10 @@ export default function CreateProductPage() {
 
     catch (err: any) {
 
-
-      enqueueSnackbar(
-
-        err?.data?.message ||
-
-        err?.message ||
-
-        "Failed to create product",
-
-        { variant: "error" }
-
-      );
+    enqueueSnackbar(
+      err?.data?.message || "Failed to create product",
+      { variant: "error" }
+    );
 
     }
 

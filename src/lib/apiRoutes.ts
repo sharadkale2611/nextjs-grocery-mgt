@@ -28,5 +28,6 @@ export const API_ROUTES = {
     STOCK_TRANSACTIONS: "/StockTransactions",
     STOCK_ADJUSTMENTS: "/StockAdjustments",
     PRODUCT_BATCHES: "/ProductBatches",
+    PRODUCT_STOCKS: "/ProductStocks",
     // PRODUCT_DETAILS: (id: number) => `/products/${id}/details`,
 };

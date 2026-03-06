@@ -2,13 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Swal from "sweetalert2";
 
 import { productApi } from "@/features/products";
 import { useGetCategoriesQuery } from "@/features/categories";
+import { useCreateSaleMutation } from "@/features/sale/sales.api";
 
 export default function POSPage() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [createSale, { isLoading: saleLoading }] = useCreateSaleMutation();
   const [cart, setCart] = useState<any[]>(() => {
     if (typeof window !== "undefined") {
       const savedCart = localStorage.getItem("pos-cart");
@@ -51,6 +54,149 @@ export default function POSPage() {
 
     return matchCategory && matchSearch;
   });
+
+  const handlePlaceOrder = async () => {
+
+    if (cart.length === 0) return;
+
+    const payload = {
+      subtotal,
+      gst,
+      total,
+      paymentMethod: "Cash",
+      items: cart.map((item) => ({
+        productId: item.productId,
+        quantity: item.qty,
+        price: item.salePrice
+      }))
+    };
+
+    try {
+
+      const res = await createSale(payload).unwrap();
+
+      generateInvoice(res.data.invoiceNumber);
+
+      clearCart();
+
+    } catch (err: any) {
+
+      console.error(err);
+
+    }
+  };
+
+  const confirmPlaceOrder = async () => {
+
+    if (cart.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Cart Empty",
+        text: "Please add items to cart",
+      });
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: "Place Order?",
+      text: "Do you want to continue?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#16a34a",
+      cancelButtonColor: "#ef4444",
+      confirmButtonText: "Yes, Place Order",
+      cancelButtonText: "Cancel"
+    });
+
+    if (result.isConfirmed) {
+      Swal.fire({
+        icon: "success",
+        title: "Order Completed",
+        timer: 2000,
+        showConfirmButton: false
+      });
+      handlePlaceOrder();
+    }
+  };
+
+  function generateInvoice(invoiceNumber: string) {
+
+    const html = `
+  <html>
+  <head>
+  <style>
+  body{
+    width:280px;
+    font-family: monospace;
+    padding:10px;
+  }
+
+  .center{text-align:center;}
+  .row{display:flex;justify-content:space-between;}
+
+  hr{border:none;border-top:1px dashed #000;}
+  </style>
+  </head>
+
+  <body>
+
+  <div class="center">
+  <b>Alpha Traders Pvt Ltd</b><br/>
+  Pune, India
+  </div>
+
+  <hr/>
+
+  Invoice #${invoiceNumber}<br/>
+  Date: ${new Date().toLocaleDateString()}<br/>
+  Cashier: Admin
+
+  <hr/>
+
+  ${cart.map(i => `
+  <div class="row">
+  <span>${i.productName} ${i.qty}x${i.salePrice}</span>
+  <span>${i.qty * i.salePrice}</span>
+  </div>
+  `).join("")}
+
+  <hr/>
+
+  <div class="row">
+  <span>Subtotal</span>
+  <span>${subtotal.toFixed(2)}</span>
+  </div>
+
+  <div class="row">
+  <span>GST 5%</span>
+  <span>${gst.toFixed(2)}</span>
+  </div>
+
+  <hr/>
+
+  <div class="row">
+  <b>TOTAL</b>
+  <b>${total.toFixed(2)}</b>
+  </div>
+
+  <hr/>
+
+  <div class="center">
+  Thank You!
+  </div>
+
+  </body>
+  </html>
+  `;
+
+    const w = window.open("", "_blank");
+
+    if (!w || !w.document) return;
+
+    w.document.write(html);
+
+    w.print();
+  }
 
   // ================= CART FUNCTIONS =================
 
@@ -174,8 +320,8 @@ export default function POSPage() {
               <div
                 key={product.productId}
                 className={`group rounded-2xl p-3 transition shadow-sm hover:shadow-md cursor-pointer ${isActive
-                    ? "border-2 border-blue-500 bg-blue-50"
-                    : "bg-white border border-gray-200"
+                  ? "border-2 border-blue-500 bg-blue-50"
+                  : "bg-white border border-gray-200"
                   }`}
               >
                 {/* IMAGE */}
@@ -362,11 +508,16 @@ export default function POSPage() {
           <button className="bg-green-100 text-green-700 rounded-xl py-3 shadow-sm">🔳 QR</button>
         </div>
 
-        <button className="mt-4 bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700">
-          Place Order
+        <button
+          onClick={confirmPlaceOrder}
+          className="mt-4 bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700"
+        >
+          {saleLoading ? "Processing..." : "Place Order"}
         </button>
 
       </div>
     </div>
   );
 }
+
+

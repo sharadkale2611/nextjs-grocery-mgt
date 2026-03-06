@@ -11,9 +11,11 @@ import { useGetProductBatchesQuery } from "@/features/productbatches";
 import { useCreateStockAdjustmentMutation } from "@/features/stockadjustments";
 import { enqueueSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { useGetStockLedgerByProductIdQuery } from "@/features/stockledger/stockledger.api";
 export default function StockAdjustmentPage() {
 
   const router = useRouter();
+
 
   // ===============================
   // STATE
@@ -42,6 +44,17 @@ export default function StockAdjustmentPage() {
   ] = useCreateStockAdjustmentMutation();
 
 
+  const { data: productStock, isLoading: stockLoading } =
+    useGetStockLedgerByProductIdQuery(productId!, {
+      skip: !productId,
+    });
+
+  const currentStock = productStock?.quantity ?? 0;
+
+  const newStock =
+    adjustmentType === "INCREASE"
+      ? currentStock + quantity
+      : currentStock - quantity;
 
   // ===============================
   // SUBMIT HANDLER
@@ -65,7 +78,7 @@ export default function StockAdjustmentPage() {
       enqueueSnackbar("Stock adjusted successfully", {
         variant: "success",
       });
-      
+
       setTimeout(() => {
         router.push("/grocery/stock-ledger");
       }, 800);
@@ -85,6 +98,7 @@ export default function StockAdjustmentPage() {
 
     }
   };
+
 
   return (
     <>
@@ -112,14 +126,24 @@ export default function StockAdjustmentPage() {
                 <option value="">Select Product</option>
 
                 {products.map((p) => (
-                  <option
-                    key={p.productId}
-                    value={p.productId}
-                  >
+                  <option key={p.productId} value={p.productId}>
                     {p.productName}
                   </option>
                 ))}
               </select>
+
+              {productId && (
+                <div className="text-sm text-blue-600 mt-2">
+                  {stockLoading ? (
+                    <span>Loading stock...</span>
+                  ) : (
+                    <span>
+                      Current Stock:{" "}
+                      <strong>{currentStock}</strong>
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* ================= TYPE ================= */}
@@ -169,6 +193,12 @@ export default function StockAdjustmentPage() {
                   setQuantity(Number(e.target.value))
                 }
               />
+
+              {productId && (
+                <div className="text-sm text-green-600 mt-1">
+                  New Stock: <strong>{newStock}</strong>
+                </div>
+              )}
             </div>
 
             {/* ================= REASON ================= */}

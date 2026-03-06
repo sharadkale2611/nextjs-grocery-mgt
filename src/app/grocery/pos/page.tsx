@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
 import { productApi } from "@/features/products";
@@ -9,8 +9,25 @@ import { useGetCategoriesQuery } from "@/features/categories";
 export default function POSPage() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [cart, setCart] = useState<any[]>([]);
+  const [cart, setCart] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      const savedCart = localStorage.getItem("pos-cart");
+      return savedCart ? JSON.parse(savedCart) : [];
+    }
+    return [];
+  });
+
   const [searchText, setSearchText] = useState("");
+
+  // Save cart whenever it changes
+  useEffect(() => {
+    localStorage.setItem("pos-cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("pos-cart");
+  };
 
   const { data: products = [], isLoading } =
     productApi.useGetProductsQuery();
@@ -118,11 +135,10 @@ export default function POSPage() {
 
           <div
             onClick={() => setSelectedCategory("All")}
-            className={`px-4 py-2 rounded-xl text-sm cursor-pointer ${
-              selectedCategory === "All"
-                ? "bg-green-500 text-white"
-                : "bg-white"
-            }`}
+            className={`px-4 py-2 rounded-xl text-sm cursor-pointer ${selectedCategory === "All"
+              ? "bg-blue-500 text-white"
+              : "bg-white"
+              }`}
           >
             All
           </div>
@@ -135,11 +151,10 @@ export default function POSPage() {
                 onClick={() =>
                   setSelectedCategory(cat.categoryName)
                 }
-                className={`px-4 py-2 rounded-xl text-sm cursor-pointer ${
-                  selectedCategory === cat.categoryName
-                    ? "bg-green-500 text-white"
-                    : "bg-white"
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm cursor-pointer ${selectedCategory === cat.categoryName
+                  ? "bg-blue-500 text-white"
+                  : "bg-white"
+                  }`}
               >
                 {cat.categoryName}
               </div>
@@ -155,17 +170,16 @@ export default function POSPage() {
               getCartItem(product.productId);
 
             const isActive = !!cartItem;
-
             return (
               <div
                 key={product.productId}
-                className={`rounded-2xl shadow-sm p-4 transition ${
-                  isActive
-                    ? "border-2 border-green-500 bg-green-50"
-                    : "bg-white"
-                }`}
+                className={`group rounded-2xl p-3 transition shadow-sm hover:shadow-md cursor-pointer ${isActive
+                    ? "border-2 border-blue-500 bg-blue-50"
+                    : "bg-white border border-gray-200"
+                  }`}
               >
-                <div className="relative w-full h-36">
+                {/* IMAGE */}
+                <div className="relative w-full h-36 overflow-hidden rounded-xl">
                   <Image
                     src={
                       product.primaryImageUrl ||
@@ -173,38 +187,53 @@ export default function POSPage() {
                     }
                     alt={product.productName}
                     fill
-                    className="object-cover rounded-xl"
+                    className="object-cover group-hover:scale-105 transition"
                   />
+
+                  {/* CATEGORY BADGE */}
+                  <div className="absolute top-2 left-2 bg-white/90 text-xs px-2 py-1 rounded-lg shadow">
+                    {product.categoryName}
+                  </div>
                 </div>
 
-                <h3 className="mt-2 font-semibold text-sm">
-                  {product.productName}
-                </h3>
+                {/* PRODUCT INFO */}
+                <div className="mt-3 space-y-1">
 
-                <p className="text-xs text-gray-400">
-                  {product.categoryName}
-                </p>
+                  <h3 className="font-semibold text-sm line-clamp-1">
+                    {product.productName}
+                  </h3>
 
-                <p className="text-green-600 font-bold">
-                  ₹{product.salePrice}
-                </p>
+                  {/* BARCODE */}
+                  {product.barcode && (
+                    <p className="text-[11px] text-gray-400">
+                      #{product.barcode}
+                    </p>
+                  )}
 
-                <div className="mt-2">
+                  {/* PRICE */}
+                  <p className="text-blue-600 font-bold text-lg">
+                    ₹{product.salePrice}
+                  </p>
+                </div>
+
+                {/* ACTION */}
+                <div className="mt-3">
 
                   {!cartItem ? (
                     <button
                       onClick={() => addToCart(product)}
-                      className="w-full bg-green-500 text-white py-2 rounded-xl hover:bg-green-600"
+                      className="w-full bg-green-500 text-white text-sm py-2 rounded-xl hover:bg-green-600 transition"
                     >
                       Add to Cart
                     </button>
                   ) : (
-                    <div className="flex items-center justify-center gap-4 bg-green-50 border-2 border-green-500 rounded-xl py-2">
+                    <div className="flex items-center justify-between bg-green-50 border border-green-500 rounded-xl px-3 py-2">
+
                       <button
                         onClick={() =>
                           decreaseQty(product.productId)
                         }
-                        className="w-7 h-7 rounded-full bg-green-600 text-white"
+                        className="w-7 h-7 rounded-full bg-green-600 text-white flex items-center justify-center"
                       >
                         −
                       </button>
@@ -217,10 +246,11 @@ export default function POSPage() {
                         onClick={() =>
                           increaseQty(product.productId)
                         }
-                        className="w-7 h-7 rounded-full bg-green-600 text-white"
+                        className="w-7 h-7 rounded-full bg-green-600 text-white flex items-center justify-center"
                       >
                         +
                       </button>
+
                     </div>
                   )}
                 </div>
@@ -235,12 +265,29 @@ export default function POSPage() {
 
         {/* CART LIST */}
         <div className="flex-1 overflow-y-auto space-y-3">
+          <div className="flex items-center justify-between mb-3">
 
-          {cart.map((item:any) => (
+            <h3 className="font-semibold text-gray-700">
+              Cart ({cart.length})
+            </h3>
+
+            {cart.length > 0 && (
+              <button
+                onClick={clearCart}
+                className="flex items-center gap-1 text-xs text-red-500 hover:text-red-600 border border-red-300 px-2 py-1 rounded-lg hover:bg-red-50 transition"
+              >
+                🗑 Clear
+              </button>
+            )}
+
+          </div>
+          {cart.map((item: any) => (
+
             <div
               key={item.productId}
               className="flex items-center gap-3 bg-white rounded-2xl p-3 shadow-sm"
             >
+
               <div className="relative w-14 h-14 rounded-xl overflow-hidden">
                 <Image
                   src={item.primaryImageUrl || "/images/product/placeholder.jpg"}

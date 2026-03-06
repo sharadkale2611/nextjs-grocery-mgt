@@ -153,6 +153,8 @@ const ProductsTable = ({ data }: Props) => {
 
             <th className="px-6 py-3">Category</th>
 
+            <th className="px-6 py-3">BarCode</th>
+
             <th className="px-6 py-3">MRP</th>
 
             <th className="px-6 py-3">Sale Price</th>
@@ -205,6 +207,15 @@ const ProductsTable = ({ data }: Props) => {
                 {product.categoryName}
 
               </td>
+
+
+              <td className="px-6 py-4">
+
+                {product.barcode}
+
+              </td>
+
+
 
 
 

@@ -7,9 +7,10 @@ import { useSidebar } from "@/context/SidebarContext";
 import { RootState } from "@/store";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState ,useEffect,useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-
+import { ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 
 
@@ -17,6 +18,8 @@ import { useSelector } from "react-redux";
 
 
 const AppHeader: React.FC = () => {
+
+  const router = useRouter();
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
@@ -143,20 +146,25 @@ const AppHeader: React.FC = () => {
           </div>
         </div>
         <div
-          className={`${
-            isApplicationMenuOpen ? "flex" : "hidden"
-          } items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
+          className={`${isApplicationMenuOpen ? "flex" : "hidden"
+            } items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
         >
           <div className="flex items-center gap-2 2xsm:gap-3">
             {/* <!-- Dark Mode Toggler --> */}
             {/* <ThemeToggleButton /> */}
-            {/* <!-- Dark Mode Toggler --> */}
 
-           {/* <NotificationDropdown />  */}
+            <button
+              onClick={() => router.push("/grocery/pos")}
+              className="flex items-center justify-center w-11 h-11 rounded-full border border-gray-200 bg-white hover:bg-gray-50 transition shadow-sm"
+            >
+              <ShoppingCart size={22} className="text-gray-700" />
+            </button>
+            {/* <!-- Dark Mode Toggler -->*/}
+            {/* <NotificationDropdown />   */}
             {/* <!-- Notification Menu Area --> */}
           </div>
           {/* <!-- User Area --> */}
-          <UserDropdown /> 
+          <UserDropdown />
         </div>
       </div>
     </header>

@@ -56,6 +56,11 @@ export default function StockAdjustmentPage() {
       ? currentStock + quantity
       : currentStock - quantity;
 
+
+  const isStockInvalid =
+    adjustmentType === "DECREASE" && quantity > currentStock;
+
+
   // ===============================
   // SUBMIT HANDLER
   // ===============================
@@ -199,6 +204,12 @@ export default function StockAdjustmentPage() {
                   New Stock: <strong>{newStock}</strong>
                 </div>
               )}
+
+              {isStockInvalid && (
+                <div className="text-sm text-red-600 mt-1">
+                  Quantity should be greater than 0
+                </div>
+              )}
             </div>
 
             {/* ================= REASON ================= */}
@@ -223,8 +234,8 @@ export default function StockAdjustmentPage() {
               <Button
                 variant="primary"
                 onClick={handleSubmit}
-                disabled={isLoading}
-              >
+                disabled={isLoading || isStockInvalid}
+              > 
                 {isLoading
                   ? "Saving..."
                   : "Save Adjustment"}

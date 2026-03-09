@@ -308,7 +308,7 @@ export default function POSPage() {
         </div>
 
         {/* PRODUCT GRID */}
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
 
           {filteredProducts.map((product: any) => {
 
@@ -319,13 +319,14 @@ export default function POSPage() {
             return (
               <div
                 key={product.productId}
-                className={`group rounded-2xl p-3 transition shadow-sm hover:shadow-md cursor-pointer ${isActive
-                  ? "border-2 border-blue-500 bg-blue-50"
-                  : "bg-white border border-gray-200"
-                  }`}
+                className="group flex flex-col justify-between rounded-2xl p-3 transition shadow-sm hover:shadow-md cursor-pointer bg-white border border-gray-200"
+              // className={`group rounded-2xl p-3 transition shadow-sm hover:shadow-md cursor-pointer ${isActive
+              //   ? "border-2 border-blue-500 bg-blue-50"
+              //   : "bg-white border border-gray-200"
+              //   }`}
               >
                 {/* IMAGE */}
-                <div className="relative w-full h-36 overflow-hidden rounded-xl">
+                <div className="relative w-full aspect-square overflow-hidden rounded-xl">
                   <Image
                     src={
                       product.primaryImageUrl ||
@@ -336,10 +337,6 @@ export default function POSPage() {
                     className="object-cover group-hover:scale-105 transition"
                   />
 
-                  {/* CATEGORY BADGE */}
-                  <div className="absolute top-2 left-2 bg-white/90 text-xs px-2 py-1 rounded-lg shadow">
-                    {product.categoryName}
-                  </div>
                 </div>
 
                 {/* PRODUCT INFO */}
@@ -348,6 +345,10 @@ export default function POSPage() {
                   <h3 className="font-semibold text-sm line-clamp-1">
                     {product.productName}
                   </h3>
+
+                  <p className="text-xs text-gray-400">
+                    {product.categoryName}
+                  </p>
 
                   {/* BARCODE */}
                   {product.barcode && (
@@ -368,7 +369,7 @@ export default function POSPage() {
                   {!cartItem ? (
                     <button
                       onClick={() => addToCart(product)}
-                      className="w-full bg-green-500 text-white text-sm py-2 rounded-xl hover:bg-green-600 transition"
+                      className="w-full bg-green-500 text-white text-sm py-2.5 rounded-xl font-medium hover:bg-green-600 transition"
                     >
                       Add to Cart
                     </button>
